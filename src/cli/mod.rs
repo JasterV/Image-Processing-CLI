@@ -18,29 +18,21 @@ pub fn build_cli() -> App<'static, 'static> {
         )
         .arg(
             Arg::with_name("OUTPUT")
-                .help("Sets the output path to store the image (defaults to the input + a number)")
+                .help("Sets the output path to store the image")
                 .required(true)
                 .index(2),
         )
         // OPTIONALS GROUP, AT LEAST ONE OPTION IS REQUIRED
-        .group(
-            ArgGroup::with_name("options")
-            .required(true)
-            .multiple(true)
-        )
-        .group(
-            ArgGroup::with_name("colors")
-            .required(false)
-            .multiple(false)
-        )
+        .group(ArgGroup::with_name("options").required(true).multiple(true))
+        .group(ArgGroup::with_name("colors").required(false))
         // OPTIONAL ARGUMENTS
         .arg(
             Arg::with_name("blur")
                 .long("blur")
                 .help("Apply blur to the image")
                 .group("options")
-                .validator(_validate_float)
-                .takes_value(true)
+                .validator(_validate_f32)
+                .takes_value(true),
         )
         .arg(
             Arg::with_name("huerotate")
@@ -48,54 +40,89 @@ pub fn build_cli() -> App<'static, 'static> {
                 .help("Rotate the hue color scale of the image")
                 .group("options")
                 .group("colors")
-                .validator(_validate_integer)
-                .takes_value(true)
+                .validator(_validate_i32)
+                .takes_value(true),
         )
         .arg(
             Arg::with_name("brighten")
                 .long("brighten")
                 .help("Sets the brighten of the image")
                 .group("options")
-                .validator(_validate_integer)
-                .takes_value(true)
+                .validator(_validate_i32)
+                .takes_value(true),
         )
         .arg(
             Arg::with_name("contrast")
                 .long("contrast")
                 .help("Apply contrast to the image")
                 .group("options")
-                .validator(_validate_float)
-                .takes_value(true)
+                .validator(_validate_f32)
+                .takes_value(true),
         )
         .arg(
+            Arg::with_name("crop")
+                .long("crop")
+                .help("Crop the image")
+                .group("options")
+                .takes_value(true)
+                .number_of_values(4)
+                .validator(_validate_u32),
+        )
+        .arg(
+            Arg::with_name("rotate")
+                .long("rotate")
+                .takes_value(true)
+                .possible_values(&["90", "180", "270"])
+                .group("options"),
+        )
+        // FLAG ARGUMENTS
+        .arg(
             Arg::with_name("grayscale")
-            .long("grayscale")
-            .short("G")
-            .help("Apply grayscale filter to the image")
-            .group("options")
-            .group("colors")
+                .long("grayscale")
+                .short("G")
+                .help("Apply grayscale filter to the image")
+                .group("options")
+                .group("colors"),
         )
         .arg(
             Arg::with_name("invert")
-            .long("invert")
-            .short("I")
-            .help("Apply Invert colors filter")
-            .group("colors")
-            .group("options")
+                .long("invert")
+                .short("I")
+                .help("Apply Invert colors filter")
+                .group("colors")
+                .group("options"),
+        )
+        .arg(
+            Arg::with_name("flipv")
+                .long("flipv")
+                .help("Flip the image vertically")
+                .group("options"),
+        )
+        .arg(
+            Arg::with_name("fliph")
+                .long("fliph")
+                .help("Flip the image horizontally")
+                .group("options"),
         )
 }
 
-fn _validate_integer(arg: String) -> Result<(), String> {
+fn _validate_u32(arg: String) -> Result<(), String> {
+    match arg.parse::<u32>() {
+        Ok(_) => Ok(()),
+        Err(_) => Err(String::from("Type Error: Unsigned integer expected")),
+    }
+}
+
+fn _validate_i32(arg: String) -> Result<(), String> {
     match arg.parse::<i32>() {
         Ok(_) => Ok(()),
-        Err(_) => Err(String::from("Type Error: Integer expected"))
+        Err(_) => Err(String::from("Type Error: Integer expected")),
     }
 }
 
-fn _validate_float(arg: String) -> Result<(), String> {
+fn _validate_f32(arg: String) -> Result<(), String> {
     match arg.parse::<f32>() {
         Ok(_) => Ok(()),
-        Err(_) => Err(String::from("Type Error: Float expected"))
+        Err(_) => Err(String::from("Type Error: Float expected")),
     }
 }
-

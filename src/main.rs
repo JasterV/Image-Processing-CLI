@@ -16,10 +16,15 @@ fn main() {
             };
         }
         Err(error) => println!("Image Error: {}", error),
-    };    
+    };
 }
 
 fn edit_photo(mut image: DynamicImage, matches: &ArgMatches) -> DynamicImage {
+    // CROP IMAGE
+    if let Some(values) = matches.values_of("crop") {
+        let vals: Vec<u32> = values.map(|elem| elem.parse::<u32>().unwrap()).collect();
+        image = image.crop_imm(vals[0], vals[1], vals[2], vals[3]);
+    }
     // APPLY BLUR
     if let Some(sigma) = matches.value_of("blur") {
         image = image.blur(sigma.parse().unwrap());
@@ -43,6 +48,14 @@ fn edit_photo(mut image: DynamicImage, matches: &ArgMatches) -> DynamicImage {
     // INVERT COLORS
     if matches.is_present("invert") {
         image.invert();
+    }
+    // FLIP VERTICALLY
+    if matches.is_present("fliph") {
+        image = image.fliph();
+    }
+    // FLIP HORIZONTALLY
+    if matches.is_present("flipv") {
+        image = image.flipv();
     }
 
     image
