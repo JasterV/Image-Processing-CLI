@@ -25,33 +25,77 @@ pub fn build_cli() -> App<'static, 'static> {
         // OPTIONALS GROUP, AT LEAST ONE OPTION IS REQUIRED
         .group(
             ArgGroup::with_name("options")
-                .required(true)
-                .multiple(true)
-                .args(&["blur", "huerotate", "brighten", "contrast"]),
+            .required(true)
+            .multiple(true)
+        )
+        .group(
+            ArgGroup::with_name("colors")
+            .required(false)
+            .multiple(false)
         )
         // OPTIONAL ARGUMENTS
         .arg(
             Arg::with_name("blur")
                 .long("blur")
+                .help("Apply blur to the image")
+                .group("options")
+                .validator(_validate_float)
                 .takes_value(true)
-                .help("Apply blur to the image"),
         )
         .arg(
             Arg::with_name("huerotate")
                 .long("hue-rotate")
+                .help("Rotate the hue color scale of the image")
+                .group("options")
+                .group("colors")
+                .validator(_validate_integer)
                 .takes_value(true)
-                .help("Rotate the hue color scale of the image"),
         )
         .arg(
             Arg::with_name("brighten")
                 .long("brighten")
+                .help("Sets the brighten of the image")
+                .group("options")
+                .validator(_validate_integer)
                 .takes_value(true)
-                .help("Sets the brighten of the image"),
         )
         .arg(
             Arg::with_name("contrast")
                 .long("contrast")
+                .help("Apply contrast to the image")
+                .group("options")
+                .validator(_validate_float)
                 .takes_value(true)
-                .help("Apply contrast to the image"),
+        )
+        .arg(
+            Arg::with_name("grayscale")
+            .long("grayscale")
+            .short("G")
+            .help("Apply grayscale filter to the image")
+            .group("options")
+            .group("colors")
+        )
+        .arg(
+            Arg::with_name("invert")
+            .long("invert")
+            .short("I")
+            .help("Apply Invert colors filter")
+            .group("colors")
+            .group("options")
         )
 }
+
+fn _validate_integer(arg: String) -> Result<(), String> {
+    match arg.parse::<i32>() {
+        Ok(_) => Ok(()),
+        Err(_) => Err(String::from("Type Error: Integer expected"))
+    }
+}
+
+fn _validate_float(arg: String) -> Result<(), String> {
+    match arg.parse::<f32>() {
+        Ok(_) => Ok(()),
+        Err(_) => Err(String::from("Type Error: Float expected"))
+    }
+}
+
