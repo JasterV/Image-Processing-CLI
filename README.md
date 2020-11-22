@@ -3,7 +3,7 @@
   <img alt="Version" src="https://img.shields.io/badge/version-0.3-blue.svg?cacheSeconds=2592000" />
 </p>
 
-> A CLI Tool to edit images (edit color, crop, rotate, flip, blur... etc)
+> A CLI Tool to edit images (edit color, crop, rotate, flip, blur etc.)
 
 ## Install
 
