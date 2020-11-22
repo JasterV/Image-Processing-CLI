@@ -4,7 +4,7 @@ use lib::cli;
 
 fn main() {
     let matches = cli::build_cli().get_matches();
-
+    
     let input = matches.value_of("INPUT").unwrap();
     let output = matches.value_of("OUTPUT").unwrap();
 
@@ -40,6 +40,15 @@ fn edit_photo(mut image: DynamicImage, matches: &ArgMatches) -> DynamicImage {
     // APPLY HUE ROTATE IF MATCHES
     if let Some(degrees) = matches.value_of("huerotate") {
         image = image.huerotate(degrees.parse().unwrap());
+    }
+    // ROTATE IMAGE
+    if let Some(degrees) = matches.value_of("rotate") {
+        match degrees {
+            "90" => image = image.rotate90(),
+            "180" => image = image.rotate180(),
+            "270" => image = image.rotate270(),
+            _ => {}
+        }
     }
     // GRAY SCALE
     if matches.is_present("grayscale") {
